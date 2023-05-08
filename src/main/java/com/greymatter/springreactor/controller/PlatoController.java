@@ -54,21 +54,21 @@ public class PlatoController {
     public Mono<ResponseEntity<Plato>> modificar(@RequestBody Plato plato){
         return service.listarPorId(plato.getId())
                 .flatMap(element -> service.modificar(plato))
+                //.flatMap(service::modificar) // esto ta mal
                 .map(element -> ResponseEntity
                         .ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(element))
-                .defaultIfEmpty(new ResponseEntity<Plato>(HttpStatus.NOT_FOUND));
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> eliminar(@PathVariable("id") String id){
         return service.listarPorId(id)
-                .flatMap(plato -> {
-                    return service.eliminar(id)
+                .flatMap(plato -> service.eliminar(id).thenReturn(new ResponseEntity<Void>(HttpStatus.NO_CONTENT))
                             //.then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
-                            .thenReturn(new ResponseEntity<Void>(HttpStatus.NO_CONTENT));
-                })
+                            //.thenReturn(new ResponseEntity<Void>(HttpStatus.NO_CONTENT));
+                )
                 .defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
     }
 
