@@ -1,5 +1,8 @@
 package com.greymatter.springreactor.model;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,8 +12,12 @@ public class Plato {
     @Id
     private String id;
 
+    @Size(min = 3)
     private String nombe;
+    @NotNull
+    @Min(1)
     private Double precio;
+    @NotNull
     private Boolean estado;
 
     public String getId() {
