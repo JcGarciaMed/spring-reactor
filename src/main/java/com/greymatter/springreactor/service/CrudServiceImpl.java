@@ -1,8 +1,12 @@
 package com.greymatter.springreactor.service;
 
+import com.greymatter.springreactor.pagination.PageSupport;
 import com.greymatter.springreactor.repo.GenericRepo;
+import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 public abstract class  CrudServiceImpl<T, ID> implements CrudService<T, ID> {
 
@@ -33,4 +37,18 @@ public abstract class  CrudServiceImpl<T, ID> implements CrudService<T, ID> {
         return getRepo().deleteById(id);
     }
 
+    @Override
+    public Mono<PageSupport<T>> listarPage(Pageable page){
+        return getRepo().findAll() //Flux<T>
+                .collectList() //Mono<List<T>>
+                .map(list -> new PageSupport<>(
+                                list
+                                        .stream()
+                                        .skip(page.getPageNumber() * page.getPageSize())
+                                        .limit(page.getPageSize())
+                                        .collect(Collectors.toList()),
+                                page.getPageNumber(), page.getPageSize(), list.size()
+                        )
+                );
+    }
 }

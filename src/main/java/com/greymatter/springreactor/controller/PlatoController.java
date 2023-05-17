@@ -1,8 +1,12 @@
 package com.greymatter.springreactor.controller;
 
+import com.greymatter.springreactor.model.Cliente;
 import com.greymatter.springreactor.model.Plato;
+import com.greymatter.springreactor.pagination.PageSupport;
 import com.greymatter.springreactor.service.PlatoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -112,6 +116,22 @@ public class PlatoController {
                 .zipWith(link2)
                 .map(function((lk1, lk2) -> Links.of(lk1, lk2)))
                 .zipWith(service.listarPorId(id), (lk3, p) -> EntityModel.of(p, lk3));
+    }
+
+    @GetMapping("/pageable")
+    public Mono<ResponseEntity<PageSupport<Plato>>> listarPageable(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "5") int size
+    ){
+
+        Pageable pageRequest = PageRequest.of(page, size);
+
+        return service.listarPage(pageRequest)
+                .map(pag -> ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(pag)
+                )
+                .defaultIfEmpty(ResponseEntity.noContent().build());
     }
 
 
