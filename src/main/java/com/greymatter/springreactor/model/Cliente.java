@@ -1,11 +1,13 @@
 package com.greymatter.springreactor.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
-@Document
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Document(collection = "clientes")
 public class Cliente {
 
     @Id
