@@ -156,4 +156,16 @@ public class FacturaController {
 						)
 				.defaultIfEmpty(ResponseEntity.noContent().build());
 	}
+
+	@GetMapping("/generarReporte/{id}")
+	public Mono<ResponseEntity<byte[]>> generarReporte(@PathVariable("id") String id){
+
+		Mono<byte[]> monoReporte = service.generarReporte(id);
+
+		return monoReporte
+				.map(bytes -> ResponseEntity.ok()
+						.contentType(MediaType.APPLICATION_OCTET_STREAM) //APPLICATION_PDF
+						.body(bytes)
+				).defaultIfEmpty(new ResponseEntity<byte[]>(HttpStatus.NO_CONTENT));
+	}
 }
