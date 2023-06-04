@@ -37,6 +37,9 @@ public class PlatoController {
 
     @GetMapping
     public Mono<ResponseEntity<Flux<Plato>>> listar(){
+        //service.listar().repeat(3).publishOn(Schedulers.single()).subscribe(i -> log.info(i.toString()));
+        //service.listar().repeat(3).parallel().runOn(Schedulers.parallel()).subscribe(i -> log.info(i.toString()));
+
         return Mono.just(ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -61,16 +64,26 @@ public class PlatoController {
                         .body(element));
     }
 
-    @PutMapping
-    public Mono<ResponseEntity<Plato>> modificar( @Valid @RequestBody Plato plato){
-        return service.listarPorId(plato.getId())
-                .flatMap(element -> service.modificar(plato))
-                //.flatMap(service::modificar) // esto ta mal
-                .map(element -> ResponseEntity
-                        .ok()
+    @PutMapping("/{id}")
+    public Mono<ResponseEntity<Plato>> modificar(@Valid @PathVariable("id") String id, @RequestBody Plato p){
+
+        Mono<Plato> monoBody = Mono.just(p);
+        Mono<Plato> monoBD = service.listarPorId(id);
+
+        return monoBD
+                .zipWith(monoBody, (bd, pl) -> {
+                    bd.setId(id);
+                    bd.setNombe(pl.getNombe());
+                    bd.setPrecio(pl.getPrecio());
+                    bd.setEstado(pl.getEstado());
+                    return bd;
+                })
+                .flatMap(service::modificar) //Mono<Plato> //x -> service.modificar(x)
+                .map(y -> ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(element))
-                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                        .body(y))
+                .defaultIfEmpty(new ResponseEntity<Plato>(HttpStatus.NOT_FOUND));
+
     }
 
     @DeleteMapping("/{id}")

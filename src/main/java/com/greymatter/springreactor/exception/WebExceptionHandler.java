@@ -39,6 +39,7 @@ public class WebExceptionHandler extends AbstractErrorWebExceptionHandler {
         Map<String, Object> errorGeneral = getErrorAttributes(request, ErrorAttributeOptions.defaults());
         Map<String, Object> mapException = new HashMap<>();
 
+
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         String statusCode = String.valueOf(errorGeneral.get("status"));
 
@@ -68,7 +69,7 @@ public class WebExceptionHandler extends AbstractErrorWebExceptionHandler {
         return ServerResponse
                 .status(httpStatus)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(mapException));
+                .body(BodyInserters.fromValue(errorGeneral));
 
     }
 

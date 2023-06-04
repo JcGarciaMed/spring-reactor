@@ -7,7 +7,6 @@ import java.net.URI;
 import com.greymatter.springreactor.model.Cliente;
 import com.greymatter.springreactor.service.ClienteService;
 import com.greymatter.springreactor.validators.RequestValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
